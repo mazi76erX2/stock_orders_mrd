@@ -1,0 +1,28 @@
+[project]
+name = "stock-orders-mrd"
+version = "0.1.0"
+description = "Stock Orders Mr. D"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django==6.1.1",
+    "djangorestframework>=3.18",
+    "python-decouple>=3.8",
+    "psycopg[binary]>=3.2",
+    "httpx>=0.27,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "pytest-django>=4.9,<5.0",
+    "ruff>=0.6,<1",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 99
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py"]
