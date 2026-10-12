@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "f1e8d2d5-4e77-4a7d-9a1e-411sql000001",
     "name": "Stock and Orders API",
-    "description": "Click-through collection for the Orders and Stock assessment.",
+    "description": "Click-through collection matching LOOM_SCRIPT.md. Start the API and worker first. Stop the worker before request 8, then restart it before request 12.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,11 +12,11 @@
     },
     {
       "key": "orderRef",
-      "value": "postman-order-001"
+      "value": "loom-normal-001"
     },
     {
       "key": "outageOrderRef",
-      "value": "postman-outage-001"
+      "value": "loom-outage-001"
     },
     {
       "key": "cursor",
@@ -36,7 +36,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "[\n  {\n    \"sku\": \"BAN-001\",\n    \"name\": \"Bananas 1kg\",\n    \"price_cents\": 199,\n    \"stock\": 50\n  },\n  {\n    \"sku\": \"APL-003\",\n    \"name\": \"Apples 1kg\",\n    \"price_cents\": 349,\n    \"stock\": 30\n  },\n  {\n    \"sku\": \"MLK-010\",\n    \"name\": \"Full Cream Milk 1L\",\n    \"price_cents\": 2199,\n    \"stock\": 100\n  }\n]"
+          "raw": "[\n  {\n    \"sku\": \"BAN-001\",\n    \"name\": \"Bananas 1kg\",\n    \"price_cents\": 199,\n    \"stock\": 50\n  },\n  {\n    \"sku\": \"MLK-010\",\n    \"name\": \"Full Cream Milk 1L\",\n    \"price_cents\": 2199,\n    \"stock\": 100\n  }\n]"
         },
         "url": "{{baseUrl}}/products/seed"
       }
@@ -51,6 +51,7 @@
     },
     {
       "name": "3. Create order",
+      "description": "Expected response: 201 Created, duplicate false, status accepted.",
       "request": {
         "method": "POST",
         "header": [
@@ -61,13 +62,14 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"postman-customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"APL-003\",\n      \"qty\": 1\n    }\n  ]\n}"
+          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"MLK-010\",\n      \"qty\": 1\n    }\n  ]\n}"
         },
         "url": "{{baseUrl}}/orders"
       }
     },
     {
       "name": "4. Submit duplicate order",
+      "description": "Send the same request again. Expected response: 200 OK with duplicate true.",
       "request": {
         "method": "POST",
         "header": [
@@ -78,13 +80,14 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"postman-customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"APL-003\",\n      \"qty\": 1\n    }\n  ]\n}"
+          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"MLK-010\",\n      \"qty\": 1\n    }\n  ]\n}"
         },
         "url": "{{baseUrl}}/orders"
       }
     },
     {
       "name": "5. Get order details",
+      "description": "The order exists and may still be accepted while the worker processes it.",
       "request": {
         "method": "GET",
         "header": [],
@@ -93,6 +96,7 @@
     },
     {
       "name": "6. Check stock",
+      "description": "Wait briefly for the worker. Expected stock after normal processing: Bananas 48 and Milk 99.",
       "request": {
         "method": "GET",
         "header": [],
@@ -101,6 +105,7 @@
     },
     {
       "name": "7. Read accepted-order feed",
+      "description": "Option A feed. The response contains the accepted-order event and next_cursor.",
       "event": [
         {
           "listen": "test",
@@ -121,6 +126,7 @@
     },
     {
       "name": "8. Create order while worker is stopped",
+      "description": "MANUAL STEP BEFORE THIS REQUEST: stop the worker with Ctrl+C, but leave the API running. Expected response: 201 Created.",
       "request": {
         "method": "POST",
         "header": [
@@ -131,13 +137,14 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"order_ref\": \"{{outageOrderRef}}\",\n  \"customer_id\": \"postman-outage-customer\",\n  \"items\": [\n    {\n      \"sku\": \"MLK-010\",\n      \"qty\": 4\n    }\n  ]\n}"
+          "raw": "{\n  \"order_ref\": \"{{outageOrderRef}}\",\n  \"customer_id\": \"customer-002\",\n  \"items\": [\n    {\n      \"sku\": \"MLK-010\",\n      \"qty\": 3\n    }\n  ]\n}"
         },
         "url": "{{baseUrl}}/orders"
       }
     },
     {
       "name": "9. Check pending outage order",
+      "description": "Expected status: accepted. The worker is still stopped.",
       "request": {
         "method": "GET",
         "header": [],
@@ -146,6 +153,7 @@
     },
     {
       "name": "10. Check stock before restart",
+      "description": "Stock must be unchanged while the worker is stopped.",
       "request": {
         "method": "GET",
         "header": [],
@@ -154,6 +162,7 @@
     },
     {
       "name": "11. Read pending outbox feed",
+      "description": "The outage order event should be present with processed_at set to null.",
       "request": {
         "method": "GET",
         "header": [],
@@ -162,6 +171,7 @@
     },
     {
       "name": "12. Check order after worker restart",
+      "description": "MANUAL STEP BEFORE THIS REQUEST: restart the worker with `uv run python manage.py process_outbox_loop --run-once`. Expected status: stock_reserved.",
       "request": {
         "method": "GET",
         "header": [],
@@ -170,6 +180,7 @@
     },
     {
       "name": "13. Check stock after worker restart",
+      "description": "Milk stock should now be three lower than it was before the outage order.",
       "request": {
         "method": "GET",
         "header": [],
