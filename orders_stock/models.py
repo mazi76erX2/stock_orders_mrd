@@ -27,9 +27,6 @@ class Order(models.Model):
         db_table = "orders"
         ordering = ["-id"]
 
-    def __str__(self):
-        return f"Order {self.order_ref} ({self.status}) - {self.total_cents}c"
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
@@ -42,9 +39,6 @@ class OrderItem(models.Model):
         indexes = [
             models.Index(fields=["order"]),
         ]
-
-    def __str__(self):
-        return f"{self.sku} x {self.qty} @ {self.unit_price_cents}c"
 
 
 class Outbox(models.Model):
@@ -66,10 +60,6 @@ class Outbox(models.Model):
             models.Index(fields=["id", "processed_at"]),
         ]
 
-    def __str__(self):
-        status = "processed" if self.processed_at else "pending"
-        return f"Outbox #{self.id} [{self.event_type}] ({status})"
-
 
 class StockMovement(models.Model):
     """
@@ -90,6 +80,3 @@ class StockMovement(models.Model):
                 fields=["order", "sku"], name="uq_django_stock_movements_order_sku"
             ),
         ]
-
-    def __str__(self):
-        return f"Movement: Order {self.order_id} - {self.sku} -{self.qty}"
