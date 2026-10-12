@@ -87,6 +87,7 @@ class CreateOrderView(APIView):
         with transaction.atomic():
             with connection.cursor() as cursor:
                 cursor.execute(
+                    # Do not use Django ORM for this insert to avoid race conditions on unique order_ref
                     """
                     INSERT INTO orders
                         (order_ref, customer_id, total_cents, status, created_at)
