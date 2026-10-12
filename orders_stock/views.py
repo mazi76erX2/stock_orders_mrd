@@ -1,3 +1,5 @@
+"""API views using Django ORM with one PostgreSQL-specific insert."""
+
 from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -87,7 +89,6 @@ class CreateOrderView(APIView):
         with transaction.atomic():
             with connection.cursor() as cursor:
                 cursor.execute(
-                    # Do not use Django ORM for this insert to avoid race conditions on unique order_ref
                     """
                     INSERT INTO orders
                         (order_ref, customer_id, total_cents, status, created_at)
@@ -152,7 +153,9 @@ class CreateOrderView(APIView):
 
 class OrderDetailView(APIView):
     def get(self, request, order_ref):
-        order = get_object_or_404(Order.objects.prefetch_related("items"), order_ref=order_ref)
+        order = get_object_or_404(
+            Order.objects.prefetch_related("items"), order_ref=order_ref
+        )
         return Response(OrderDetailSerializer(order).data)
 
 

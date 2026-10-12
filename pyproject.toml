@@ -3,7 +3,7 @@ name = "stock-orders-mrd"
 version = "0.1.0"
 description = "Stock Orders Mr. D"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "django==6.1.1",
     "djangorestframework>=3.18",
@@ -25,4 +25,7 @@ line-length = 99
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
-python_files = ["test_*.py", "*_test.py"]
+python_files = ["test_*.py", "tests.py", "*_test.py"]
+
+[tool.setuptools.packages.find]
+include = ["config*", "orders_stock*"]
