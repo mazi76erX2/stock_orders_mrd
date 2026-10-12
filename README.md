@@ -173,3 +173,13 @@ started separately so it can be stopped during the outage demonstration.
 The system deliberately excludes authentication, payments, strict inventory
 reservation, Kafka, Redis, Celery, Kubernetes, and horizontal worker
 orchestration. Those are production concerns outside this focused assessment.
+
+## Loom walkthroughs
+
+- [Project demonstration](https://www.loom.com/share/f9d2f9f3100041c3a42434a7ed42553a)
+- [Code architecture walkthrough](https://www.loom.com/share/6443610ac5de49b0aee58b24f060d833)
+- [Design decisions and technical highlights](https://www.loom.com/share/c17e837242e7435595ded3077dadedfd)
+
+## GitHub repository
+
+[mazi76erX2/stock_orders_mrd](https://github.com/mazi76erX2/stock_orders_mrd)
