@@ -13,6 +13,7 @@ Representative prompts included:
 - “Explain how the outbox worker handles duplicates and an outage.”
 - “Update the README and solution to match the implementation.”
 - “Keep only the two most important tests.”
+- "Create a simulation of the walkthrough."
 
 The reasoning was to keep PostgreSQL as the durable source of truth, use the
 ORM for normal application work, and use raw `ON CONFLICT ... RETURNING` only

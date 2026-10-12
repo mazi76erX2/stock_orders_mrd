@@ -103,6 +103,17 @@ The Option A consumer is a small polling example:
 uv run python -m scripts.consumer
 ```
 
+To simulate the walkthrough locally, start the API first and run:
+
+```bash
+uv run python -m scripts.simulate_walkthrough
+```
+
+The simulator starts and stops the worker itself, times each step, verifies
+duplicate idempotency, confirms stock stays unchanged during the outage, and
+checks that the pending event is processed after restart. Use
+`--pause 2` for slower output.
+
 ---
 
 ## Running the tests
@@ -144,7 +155,8 @@ stock_orders_mrd/
 │       └── process_outbox_loop.py  # Polling worker entry point
 ├── scripts/
 │   ├── seed_and_demo.py            # Duplicate and outage demonstration
-│   └── consumer.py                 # Option A feed consumer
+│   ├── consumer.py                 # Option A feed consumer
+│   └── simulate_walkthrough.py     # Timed local walkthrough simulation
 ├── docker-compose.yml
 ├── pyproject.toml
 ├── README.md
