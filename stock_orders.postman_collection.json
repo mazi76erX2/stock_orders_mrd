@@ -1,0 +1,180 @@
+{
+  "info": {
+    "_postman_id": "f1e8d2d5-4e77-4a7d-9a1e-411sql000001",
+    "name": "Stock and Orders API",
+    "description": "Click-through collection for the Orders and Stock assessment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "orderRef",
+      "value": "postman-order-001"
+    },
+    {
+      "key": "outageOrderRef",
+      "value": "postman-outage-001"
+    },
+    {
+      "key": "cursor",
+      "value": "0"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Seed products",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"sku\": \"BAN-001\",\n    \"name\": \"Bananas 1kg\",\n    \"price_cents\": 199,\n    \"stock\": 50\n  },\n  {\n    \"sku\": \"APL-003\",\n    \"name\": \"Apples 1kg\",\n    \"price_cents\": 349,\n    \"stock\": 30\n  },\n  {\n    \"sku\": \"MLK-010\",\n    \"name\": \"Full Cream Milk 1L\",\n    \"price_cents\": 2199,\n    \"stock\": 100\n  }\n]"
+        },
+        "url": "{{baseUrl}}/products/seed"
+      }
+    },
+    {
+      "name": "2. List products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/products"
+      }
+    },
+    {
+      "name": "3. Create order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"postman-customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"APL-003\",\n      \"qty\": 1\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/orders"
+      }
+    },
+    {
+      "name": "4. Submit duplicate order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_ref\": \"{{orderRef}}\",\n  \"customer_id\": \"postman-customer-001\",\n  \"items\": [\n    {\n      \"sku\": \"BAN-001\",\n      \"qty\": 2\n    },\n    {\n      \"sku\": \"APL-003\",\n      \"qty\": 1\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/orders"
+      }
+    },
+    {
+      "name": "5. Get order details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/orders/{{orderRef}}"
+      }
+    },
+    {
+      "name": "6. Check stock",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/products"
+      }
+    },
+    {
+      "name": "7. Read accepted-order feed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('cursor', body.next_cursor);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/feed/events?after={{cursor}}&limit=20"
+      }
+    },
+    {
+      "name": "8. Create order while worker is stopped",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"order_ref\": \"{{outageOrderRef}}\",\n  \"customer_id\": \"postman-outage-customer\",\n  \"items\": [\n    {\n      \"sku\": \"MLK-010\",\n      \"qty\": 4\n    }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/orders"
+      }
+    },
+    {
+      "name": "9. Check pending outage order",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/orders/{{outageOrderRef}}"
+      }
+    },
+    {
+      "name": "10. Check stock before restart",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/products"
+      }
+    },
+    {
+      "name": "11. Read pending outbox feed",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/feed/events?after=0&limit=20"
+      }
+    },
+    {
+      "name": "12. Check order after worker restart",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/orders/{{outageOrderRef}}"
+      }
+    },
+    {
+      "name": "13. Check stock after worker restart",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/products"
+      }
+    }
+  ]
+}
